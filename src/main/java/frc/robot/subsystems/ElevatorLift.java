@@ -81,26 +81,45 @@ public class ElevatorLift extends SubsystemBase {
   public void elevatorControl() {
 
     double motorPower;
+    //MAIN STATEMENT TO CONTROLL ELEVATOR FUNCTION
+    //Loops through this elseif statement. It checks to see if the elevator meets any conditions
+    //that should change the normal operation, and if not, defaults to normal operation.
 
-    if (!lowProxRaw.get() && RobotContainer.driverJoystick.getRawAxis(5) > 0) {
+    //Deadzone for controller, disables motors & locks brakes.
+    if(java.lang.Math.abs(RobotContainer.driverJoystick.getRawAxis(5)) < .1) {
       motorPower = 0;
       setBrake("on");
+
+    //Checks to see if the elevator is in bottom position & the joystick is in a downward position
+    //if so, engages brake and disables motors.
+    }else if (!lowProxRaw.get() && RobotContainer.driverJoystick.getRawAxis(5) > 0) {
+      motorPower = 0;
+      setBrake("on");
+    
+    //This statement checks to see if elevator is at top & joystick is in upwards position.
+    //If so, disables motors and engages brake.
     } else if (!highProxRaw.get() && RobotContainer.driverJoystick.getRawAxis(5) < 0) {
       motorPower = 0;
       setBrake("on");
+
+    //If the elevator is above 19000 on the encoder, slows down elevator.
+    }else if (elevatorEncoderValue()>=19000 && RobotContainer.driverJoystick.getRawAxis(5)<-.1) {
+      motorPower=RobotContainer.driverJoystick.getRawAxis(5)*-.4;
+      setBrake("off");
+
+    //If the encoder value is below 3000, slows down elevator.
+    } else if (elevatorEncoderValue()<=3000 && RobotContainer.driverJoystick.getRawAxis(5)>.1) {
+      motorPower = .2;
+      setBrake("off");
+
+    //If the robot is not at top or bottom, and the joystick is in a downwards position,
+    //engages a modifier method.
     } else if (RobotContainer.driverJoystick.getRawAxis(5) > .1) {
       motorPower = downThrottlePower();
       setBrake("off");
-    }else if(java.lang.Math.abs(RobotContainer.driverJoystick.getRawAxis(5)) < .1) {
-      motorPower = 0;
-      setBrake("on");
-    }else if(elevatorEncoderValue()>=19000 && RobotContainer.driverJoystick.getRawAxis(5)<-.1) {
-      motorPower=RobotContainer.driverJoystick.getRawAxis(5)*-.4;
-      setBrake("off");
-    }else if(elevatorEncoderValue()<=3000 && RobotContainer.driverJoystick.getRawAxis(5)>.1){
-      motorPower=-1;
-      setBrake("off");
-    }else{
+
+    //Dead zone, if joystick is within .1 of 0 in either direction, engages brake & disables motors.
+    } else {
       motorPower = RobotContainer.driverJoystick.getRawAxis(5)*-1;
       setBrake("off");
     }
