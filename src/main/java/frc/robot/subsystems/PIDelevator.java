@@ -27,30 +27,12 @@ public class PIDelevator extends PIDSubsystem {
    * @param setpointID The setpoint that should be used 0-2
    * @return Returns the setpoint value for the elevator PID.
    */
-  
+
   public double userSetpoint() {
 
-    if(controllMode == "manual") {
-      if (RobotContainer.driverJoystick.getRawAxis(5) < -.2) {
-        setpointValue += 500;
-        RobotContainer.elevatorLift.setBrake("off");
-        run = true;
-      }else if(RobotContainer.driverJoystick.getRawAxis(5) > .2) {
-        setpointValue -= 10;
-        RobotContainer.elevatorLift.setBrake("off");
-        run = true;
-      }else{
-        RobotContainer.elevatorLift.setBrake("on");
-        run = false;
-      }
-
-      if(setpointValue < 2000) {
-        RobotContainer.elevatorLift.elevatorControl();
-        run = false;
-      }else if(setpointValue > 22000) {
-        RobotContainer.elevatorLift.elevatorControl();
-        run = false;
-      }
+  if(controllMode == "manual") {
+    RobotContainer.elevatorLift.elevatorControl();
+    run = false;
   }else if(controllMode == "setpoint") {
       switch (setpointID) {
         case 0:
@@ -63,6 +45,7 @@ public class PIDelevator extends PIDSubsystem {
         setpointValue = 254000;
         break;
       }
+      run = true;
   }
 
     return setpointValue;
